@@ -359,7 +359,9 @@ class DunsRos():
         c_calibr_fric: float,
         rho_lrc_kgm3: float,
         rho_grc_kgm3: float,
-        sigma_l_nm: float,
+        T: float, 
+        wc : float,
+        sigmao : float,
         **kwargs
     ) -> float:
         """
@@ -370,15 +372,16 @@ class DunsRos():
         :param eps_m: шероховатость стенки трубы, м
         :param mul_rc_cp: вязкость жидкости в P,T условиях, сПз
         :param mug_rc_cp: вязкость газа в P,T условиях, сПз
-        :param c_calibr_fric: калибровочный коэффициент для слагаемого
-                              градиента давления, вызванного трением
+        :param c_calibr_fric: калибровочный коэффициент для слагаемого градиента давления, вызванного трением
         :param rho_lrc_kgm3: плотность жидкости в P,T условиях, кг/м3
         :param rho_grc_kgm3: плотность газа в P,T условиях, кг/м3
-        :param sigma_l_nm: коэффициент поверхностного натяжения жидкость-газ, Н/м
-
+        :param T: температура
+        :param wc:  обводненность
+        :param sigmao:  коэффициент поверхностного натяжения нефти
         :return: градиент давления Па/м
         -------
         """
+        sigma_l_nm = sigmao * (1 - wc) + self.dr_const["sigmaw"](T)     #коэффициент поверхностного натяжения жидкость-газ, Н/м
 
         if self.vsl == 0 and self.vsg == 0:
             self.dp_dl_fr = 0
@@ -422,9 +425,11 @@ class DunsRos():
         qg_rc_m3day: float,
         rho_lrc_kgm3: float,
         rho_grc_kgm3: float,
-        sigma_l_nm: float,
         p: float,
-        mul_rc_cp: float,
+        T: float, 
+        wc : float,
+        sigmao : float,
+        muo : float,
         **kwargs
     ):
         """
@@ -436,11 +441,15 @@ class DunsRos():
         :param qg_rc_m3day: расход газа в P,T условиях, м3/сут
         :param rho_lrc_kgm3: плотность многофазной жидкости в P,T условиях, кг/м3
         :param rho_grc_kgm3: плотность газа в P,T условиях, кг/м3
-        :param sigma_l_nm: коэффициент поверхностного натяжения жидкость-газ, Н/м
         :param p: текущее давление, Па
-        :param mul_rc_cp: вязкость жидкости в P,T условиях, сПз
+        :param T: температура
+        :param wc:  обводненность
+        :param sigmao:  коэффициент поверхностного натяжения нефти
+        :param muo:  вязкость нефти
         """
-        self._d = d
+        self._d = d                                                     #диаметр трубы
+        mul_rc_cp = muo * (1 - wc) + self.dr_const["muw"](T)            #вязкость жидкости в P,T условиях, сПз
+        sigma_l_nm = sigmao * (1 - wc) + self.dr_const["sigmaw"](T)     #коэффициент поверхностного натяжения жидкость-газ, Н/м
         
         if ql_rc_m3day == 0 and qg_rc_m3day == 0:
             # Случай нулевого дебита
