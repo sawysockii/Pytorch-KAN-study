@@ -354,7 +354,6 @@ class DunsRos():
     def calc_fric(
         self,
         eps_m: float,
-        mul_rc_cp: float,
         mug_rc_cp: float,
         c_calibr_fric: float,
         rho_lrc_kgm3: float,
@@ -362,6 +361,7 @@ class DunsRos():
         T: float, 
         wc : float,
         sigmao : float,
+        muo : float,       
         **kwargs
     ) -> float:
         """
@@ -381,7 +381,8 @@ class DunsRos():
         :return: градиент давления Па/м
         -------
         """
-        sigma_l_nm = sigmao * (1 - wc) + self.dr_const["sigmaw"](T)     #коэффициент поверхностного натяжения жидкость-газ, Н/м
+        mul_rc_cp = muo * (1 - wc) + self.dr_const["muw"](T) * wc            #вязкость жидкости в P,T условиях, сПз
+        sigma_l_nm = sigmao * (1 - wc) + self.dr_const["sigmaw"](T) * wc     #коэффициент поверхностного натяжения жидкость-газ, Н/м
 
         if self.vsl == 0 and self.vsg == 0:
             self.dp_dl_fr = 0
@@ -448,8 +449,8 @@ class DunsRos():
         :param muo:  вязкость нефти
         """
         self._d = d                                                     #диаметр трубы
-        mul_rc_cp = muo * (1 - wc) + self.dr_const["muw"](T)            #вязкость жидкости в P,T условиях, сПз
-        sigma_l_nm = sigmao * (1 - wc) + self.dr_const["sigmaw"](T)     #коэффициент поверхностного натяжения жидкость-газ, Н/м
+        mul_rc_cp = muo * (1 - wc) + self.dr_const["muw"](T) * wc            #вязкость жидкости в P,T условиях, сПз
+        sigma_l_nm = sigmao * (1 - wc) + self.dr_const["sigmaw"](T) * wc     #коэффициент поверхностного натяжения жидкость-газ, Н/м
         
         if ql_rc_m3day == 0 and qg_rc_m3day == 0:
             # Случай нулевого дебита
