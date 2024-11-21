@@ -394,7 +394,7 @@ class DunsRos():
             if self.fp == 2 or self.fp == 3:
                 # Параметры для эмульсионного режима
                 d_new = self._d - 2 * eps_m
-                vsg_new = self.vsg * self.d**2 / d_new**2
+                vsg_new = self.vsg * self._d**2 / d_new**2
 
                 self.n_re = self.calc_n_re(self._d, rho_grc_kgm3, vsg_new, mug_rc_cp)
 
